@@ -108,6 +108,17 @@ h1 em{font-style:italic;color:var(--gold);font-weight:400}
 .dots button{width:30px;height:30px;border-radius:50%;border:0;cursor:pointer;font:700 10px var(--ui);color:#7B6D55;background:rgba(30,25,21,.06);transition:background .25s,color .25s}
 .dots button[aria-pressed="true"]{background:var(--lv);color:#fff}
 
+/* Video: heller Bildschirm unter der Leselampe */
+.film{padding-top:0}
+.screen{position:relative;margin:48px 0 0;border-radius:22px;overflow:hidden;background:#F5F6F8;
+  box-shadow:0 0 0 1px rgba(216,172,89,.35), 0 50px 100px -30px rgba(0,0,0,.85), 0 0 160px -30px rgba(245,236,214,.28)}
+.screen::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(115deg, rgba(255,255,255,.18), transparent 28%)}
+.screen video{display:block;width:100%;aspect-ratio:16/9;height:auto}
+.sound{position:absolute;right:18px;bottom:18px;z-index:1;font:600 14px var(--ui);color:var(--cream);background:rgba(17,14,11,.78);
+  border:1px solid rgba(216,172,89,.45);border-radius:999px;padding:10px 18px;cursor:pointer;backdrop-filter:blur(6px);transition:background .2s,color .2s}
+.sound:hover{background:var(--gold);color:var(--ink)}
+
 /* Abschnitte */
 section{padding-block:clamp(64px,9vw,120px)}
 h2{font-family:var(--display);font-weight:500;font-size:clamp(36px,4.6vw,64px);line-height:1.02;letter-spacing:-.015em;margin:16px 0 20px}
@@ -186,6 +197,7 @@ footer a:hover{color:var(--gold)}
 <div class="grain" aria-hidden="true"></div>
 
 <nav class="wrap" aria-label="Hauptnavigation">
+  <a class="link" href="#video">Video</a>
   <a class="link" href="#fassungen">So funktioniert’s</a>
   <a class="link" href="#buecher">Bücher</a>
   <a class="link" href="#niveau">Für wen</a>
@@ -237,6 +249,18 @@ footer a:hover{color:var(--gold)}
       </article>
     </div>
   </div>
+
+  <section id="video" class="film">
+    <div class="wrap">
+      <span class="eyebrow">In 48 Sekunden</span>
+      <h2>So liest es sich <em>in der App.</em></h2>
+      <figure class="screen reveal">
+        <video id="film" src="media/3lb-erklaervideo.mp4" poster="media/3lb-erklaervideo-poster.jpg"
+               muted playsinline loop preload="metadata" aria-label="Erklärvideo: Satz antippen und durch die vier Fassungen wischen"></video>
+        <button type="button" class="sound" id="sound" aria-pressed="false">Ton an</button>
+      </figure>
+    </div>
+  </section>
 
   <hr class="rule">
 
@@ -490,6 +514,18 @@ if (!reduce && matchMedia("(pointer:fine)").matches) {
 // Einblenden beim Scrollen
 const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .15 });
 document.querySelectorAll(".reveal").forEach((el, i) => { el.style.transitionDelay = (i % 4) * 0.12 + "s"; io.observe(el); });
+
+// Video: läuft stumm, solange es im Bild ist; Ton nur auf Knopfdruck
+const film = $("film"), sound = $("sound");
+if (!reduce) {
+  new IntersectionObserver(([e]) => { e.isIntersecting ? film.play().catch(() => {}) : film.pause(); }, { threshold: .4 }).observe(film);
+} else film.controls = true;
+sound.onclick = () => {
+  film.muted = !film.muted;
+  if (!film.muted) { film.currentTime = 0; film.play(); }
+  sound.textContent = film.muted ? "Ton an" : "Ton aus";
+  sound.setAttribute("aria-pressed", !film.muted);
+};
 
 setBook("fr");
 startAuto();
