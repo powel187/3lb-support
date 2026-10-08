@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3-Level-Books – Klassiker im Original lesen</title>
+<meta name="description" content="Klassiker im Original lesen. Jeder Satz in vier Fassungen: Original, B1, A1 und Übersetzung – einen Wisch entfernt.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..800;1,6..96,400..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Figtree:wght@400;500;600;700&subset=cyrillic,latin-ext&display=swap">
+<style>
+:root{
+  --night:#110E0B;      /* Schreibtisch bei Nacht */
+  --ink:#1E1915;        /* Druckerschwärze */
+  --paper:#F5EBD5;      /* Buchseite */
+  --cream:#FAF3E3;      /* Text auf dunkel */
+  --gold:#D8AC59;       /* Licht, Marke */
+  --gold-deep:#AF8B3E;
+  --muted:#B9AE98;
+  --lv-orig:#8F6E2C; --lv-b1:#3E71B6; --lv-a1:#357D4E; --lv-de:#8D4D9A;
+  --display:"Bodoni Moda", "Didot", Georgia, serif;
+  --book:"Source Serif 4", Georgia, serif;
+  --ui:"Figtree", system-ui, sans-serif;
+  --mx:78%; --my:18%;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--night);color:var(--cream);font-family:var(--ui);overflow-x:clip;text-wrap:pretty;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+img{display:block;max-width:100%}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:6px}
+
+/* Leselampe: warmes Licht folgt der Maus */
+.lamp{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(640px circle at var(--mx) var(--my), rgba(232,170,80,.17), rgba(232,170,80,.05) 40%, transparent 70%);
+  transition:background .08s linear}
+.grain{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.07;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+main,nav,footer{position:relative;z-index:1}
+.wrap{max-width:1200px;margin:0 auto;padding-inline:clamp(20px,5vw,64px)}
+
+/* Navigation */
+nav{display:flex;align-items:center;justify-content:flex-end;gap:28px;padding-block:22px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;font-family:var(--book);font-weight:600;font-size:20px;text-decoration:none;margin-right:auto}
+.brand img{width:36px;height:36px;margin:-6px}
+nav a.link{font-size:15px;text-decoration:none;color:var(--muted);transition:color .2s}
+nav a.link:hover{color:var(--cream)}
+.btn{display:inline-flex;align-items:center;gap:10px;font:600 15px var(--ui);text-decoration:none;border-radius:999px;padding:12px 22px;transition:transform .2s,box-shadow .2s,background .2s}
+.btn-gold{background:var(--gold);color:var(--ink);box-shadow:0 0 0 0 rgba(216,172,89,.4)}
+.btn-gold:hover{transform:translateY(-1px);box-shadow:0 8px 30px -6px rgba(216,172,89,.55)}
+.btn-ghost{color:var(--cream);border:1px solid rgba(250,243,227,.22)}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:1.05fr 1fr;gap:clamp(32px,5vw,80px);align-items:center;padding-block:clamp(40px,7vw,96px) clamp(72px,9vw,128px)}
+.eyebrow{font:600 12px/1 var(--ui);letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.lockup{display:flex;align-items:center;gap:clamp(14px,2vw,24px);margin-bottom:clamp(28px,3.5vw,44px)}
+.lockup img{width:clamp(120px,13vw,190px);height:auto;margin:-14px;filter:drop-shadow(0 18px 36px rgba(216,172,89,.22))}
+.lockup > div{display:flex;flex-direction:column;gap:12px}
+.wordmark{font-family:var(--book);font-weight:600;font-size:clamp(40px,5.2vw,72px);line-height:1;letter-spacing:-.01em;color:var(--cream)}
+h1{font-family:var(--display);font-weight:500;font-size:clamp(42px,5.2vw,76px);line-height:1.02;letter-spacing:-.02em;margin:0 0 28px}
+h1 em{font-style:italic;color:var(--gold);font-weight:400}
+.lede{font-size:clamp(17px,1.4vw,19px);line-height:1.62;color:var(--muted);max-width:44ch;margin:0 0 36px}
+.lede strong{color:var(--cream);font-weight:600}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+
+/* Die Buchseite */
+.stage{position:relative;perspective:1600px}
+.page{position:relative;background:
+   radial-gradient(120% 90% at 30% 10%, #FBF3E0 0%, var(--paper) 55%, #E9DAB8 100%);
+  color:var(--ink);border-radius:6px 16px 16px 6px;padding:clamp(28px,4vw,48px) clamp(24px,3.6vw,46px) 36px;
+  box-shadow:0 1px 0 rgba(255,255,255,.6) inset, -14px 0 30px -18px rgba(0,0,0,.35) inset, 0 40px 80px -24px rgba(0,0,0,.75), 0 0 120px -20px rgba(216,172,89,.25);
+  transform:rotateX(6deg) rotateY(-9deg) rotateZ(1deg);transform-style:preserve-3d;transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.stage:hover .page{transform:rotateX(2deg) rotateY(-3deg)}
+.page::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:.35;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 .55 0 0 0 0 .45 0 0 0 0 .3 0 0 0 .35 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E")}
+.page-head{display:flex;justify-content:space-between;align-items:center;gap:12px;font:600 10.5px/1.2 var(--ui);letter-spacing:.14em;text-transform:uppercase;color:#8A7A5E;margin-bottom:22px}
+.book-switch{display:flex;gap:4px}
+.book-switch button{font:600 10.5px var(--ui);letter-spacing:.1em;text-transform:uppercase;border:0;background:transparent;color:#8A7A5E;padding:6px 9px;border-radius:999px;cursor:pointer}
+.book-switch button[aria-pressed="true"]{background:rgba(30,25,21,.08);color:var(--ink)}
+.prose{font-family:var(--book);font-size:clamp(15px,1.25vw,17px);line-height:1.62;margin:0;color:rgba(30,25,21,.55)}
+.fade-out{-webkit-mask-image:linear-gradient(#000 30%,transparent);mask-image:linear-gradient(#000 30%,transparent)}
+.target{position:relative;margin:16px -14px;padding:16px 64px 18px 14px;border-radius:12px;cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;outline-offset:2px;
+  background:linear-gradient(90deg, rgba(216,172,89,.18), rgba(216,172,89,.08));box-shadow:0 0 0 1px rgba(175,139,62,.22), 0 10px 30px -14px rgba(175,139,62,.6)}
+.target:active{cursor:grabbing}
+.target p{font-family:var(--book);font-size:clamp(17px,1.45vw,19.5px);line-height:1.55;margin:0;color:var(--ink);min-height:4.65em}
+.target p.italic{font-style:italic}
+.w{display:inline-block;white-space:pre;transition:opacity .28s ease, transform .34s cubic-bezier(.2,.9,.25,1.2), filter .28s ease}
+.w.out{opacity:0;transform:translateX(-14px);filter:blur(3px)}
+.w.pre{opacity:0;transform:translateX(16px);filter:blur(3px);transition:none}
+.sweep{position:absolute;top:8px;bottom:8px;width:3px;right:0;border-radius:3px;opacity:0;pointer-events:none;
+  background:linear-gradient(var(--gold),#FFE7B0,var(--gold));box-shadow:0 0 14px 4px rgba(232,180,90,.65)}
+.sweep.go{animation:sweep .5s cubic-bezier(.5,0,.3,1)}
+@keyframes sweep{0%{opacity:0;right:6px}15%{opacity:1}85%{opacity:1}100%{opacity:0;right:calc(100% - 10px)}}
+.lv-badge{position:absolute;right:12px;top:14px;font:700 12px/1 var(--ui);letter-spacing:.04em;color:#fff;padding:7px 10px;border-radius:999px;background:var(--lv);box-shadow:0 4px 14px -4px var(--lv);transition:background .3s, box-shadow .3s, transform .3s}
+.lv-badge.pop{animation:pop .45s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{0%{transform:scale(.6)}100%{transform:scale(1)}}
+.lv-name{font:700 10.5px/1 var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--lv);margin-bottom:8px;transition:color .3s}
+.gloss{cursor:help;text-decoration:underline dotted;text-underline-offset:4px;text-decoration-color:var(--lv-orig)}
+.gloss-tip{margin-top:12px;padding:10px 13px;border-radius:10px;background:var(--ink);color:var(--cream);font:13px/1.45 var(--ui)}
+.gloss-tip[hidden]{display:none}
+.ladder{display:flex;align-items:center;gap:14px;margin-top:22px}
+.bars{display:flex;flex-direction:column;gap:5px}
+.bars i{display:block;height:6px;border-radius:3px;background:rgba(30,25,21,.14);transition:background .3s}
+.bars i:nth-child(1){width:46px}.bars i:nth-child(2){width:34px}.bars i:nth-child(3){width:22px}
+.hint{font:500 13.5px/1.4 var(--ui);color:#7B6D55}
+.dots{display:flex;gap:6px;margin-left:auto}
+.dots button{width:30px;height:30px;border-radius:50%;border:0;cursor:pointer;font:700 10px var(--ui);color:#7B6D55;background:rgba(30,25,21,.06);transition:background .25s,color .25s}
+.dots button[aria-pressed="true"]{background:var(--lv);color:#fff}
+
+/* Abschnitte */
+section{padding-block:clamp(64px,9vw,120px)}
+h2{font-family:var(--display);font-weight:500;font-size:clamp(36px,4.6vw,64px);line-height:1.02;letter-spacing:-.015em;margin:16px 0 20px}
+h2 em{font-style:italic;color:var(--gold);font-weight:400}
+.sub{font-size:18px;line-height:1.6;color:var(--muted);max-width:52ch;margin:0}
+.rule{height:1px;background:linear-gradient(90deg,transparent,rgba(216,172,89,.35),transparent);border:0;margin:0}
+
+/* Treppe: vier Fassungen, jede eine Stufe tiefer */
+.stairs{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:56px;align-items:start}
+.step{background:rgba(250,243,227,.035);border:1px solid rgba(250,243,227,.09);border-radius:18px;padding:24px 22px 26px;position:relative;overflow:hidden}
+.step:nth-child(2){margin-top:36px}.step:nth-child(3){margin-top:72px}.step:nth-child(4){margin-top:108px}
+.step::after{content:"";position:absolute;left:0;top:0;right:0;height:3px;background:var(--c)}
+.step .tag{font:700 11px/1 var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--c-light)}
+.step h3{font:600 15px/1.4 var(--ui);color:var(--muted);margin:10px 0 16px}
+.step p{font-family:var(--book);font-size:16.5px;line-height:1.55;margin:0;color:var(--cream)}
+.step p.it{font-style:italic}
+
+/* Bücher */
+.shelf{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(24px,4vw,56px);margin-top:56px;perspective:1400px}
+.book{text-decoration:none}
+.cover{position:relative;aspect-ratio:2/3;border-radius:4px 10px 10px 4px;overflow:hidden;transform:rotateY(-14deg) rotateX(3deg);transform-origin:left center;
+  box-shadow:-6px 0 0 -1px #2a2119, 0 30px 60px -20px rgba(0,0,0,.8);transition:transform .6s cubic-bezier(.2,.8,.2,1), box-shadow .6s}
+.cover img{width:100%;height:100%;object-fit:cover}
+.cover::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg, rgba(0,0,0,.35) 0%, transparent 9%, rgba(255,255,255,.14) 30%, transparent 48%);pointer-events:none}
+.book:hover .cover{transform:rotateY(0) rotateX(0) translateY(-8px);box-shadow:0 0 0 0 #2a2119, 0 40px 80px -24px rgba(0,0,0,.85), 0 0 80px -20px rgba(216,172,89,.35)}
+.book h3{font-family:var(--display);font-weight:500;font-size:26px;margin:26px 0 6px}
+.book p{margin:0;color:var(--muted);font-size:15px}
+.book .orig{font-family:var(--book);font-style:italic;color:var(--gold);font-size:15px;margin-top:2px}
+
+/* Für wen */
+.levels{margin-top:48px;border-top:1px solid rgba(250,243,227,.1)}
+.level{display:grid;grid-template-columns:140px 1fr 1.3fr;gap:24px 40px;padding:30px 0;border-bottom:1px solid rgba(250,243,227,.1);align-items:baseline}
+.chip{justify-self:start;font:700 13px/1 var(--ui);padding:8px 14px;border-radius:999px;background:var(--c);color:#fff}
+.level h3{font-family:var(--display);font-weight:500;font-size:26px;line-height:1.15;margin:0}
+.level p{margin:0;color:var(--muted);font-size:16.5px;line-height:1.6}
+.level small{display:block;margin-top:8px;color:var(--gold);font-size:13.5px;letter-spacing:.02em}
+
+/* Abschluss */
+.final{text-align:center;position:relative}
+.final .icon{width:160px;height:auto;margin:0 auto 18px;filter:drop-shadow(0 20px 40px rgba(216,172,89,.25))}
+.final h2{font-size:clamp(40px,6vw,84px)}
+.badge{display:inline-block;margin-top:34px;transition:transform .2s}
+.badge:hover{transform:translateY(-2px)}
+.badge img{height:56px;width:auto}
+
+footer{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;padding-block:32px 48px;font-size:14px;color:var(--muted);border-top:1px solid rgba(250,243,227,.08)}
+footer .brand{font-size:17px}
+footer a{text-decoration:none}
+footer a:hover{color:var(--gold)}
+
+/* Einblenden beim Scrollen */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .9s ease, transform .9s cubic-bezier(.2,.8,.2,1)}
+.reveal.in{opacity:1;transform:none}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr}
+  .page{transform:none}
+  .stairs{grid-template-columns:1fr 1fr}
+  .step:nth-child(n){margin-top:0}
+  .level{grid-template-columns:1fr}
+  nav a.link{display:none}
+}
+@media (max-width:560px){
+  .stairs,.shelf{grid-template-columns:1fr}
+  .cover{transform:none;max-width:300px}
+  .target{padding-right:58px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<div class="lamp" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<nav class="wrap" aria-label="Hauptnavigation">
+  <a class="link" href="#fassungen">So funktioniert’s</a>
+  <a class="link" href="#buecher">Bücher</a>
+  <a class="link" href="#niveau">Für wen</a>
+  <a class="link" href="https://github.com/powel187/3lb-support#readme">Support</a>
+  <a class="btn btn-gold" href="#laden">App laden</a>
+</nav>
+
+<main id="top">
+  <div class="wrap hero">
+    <div>
+      <div class="lockup">
+        <img src="img/icon.png" alt="" width="220" height="220">
+        <div>
+          <span class="wordmark">3-Level-Books</span>
+          <span class="eyebrow">Lese-App für iPhone und iPad</span>
+        </div>
+      </div>
+      <h1>Klassiker<br><em>im Original</em> lesen.</h1>
+      <p class="lede">Jeder Satz liegt in vier Fassungen vor: <strong>Original, B1, A1 und Übersetzung</strong>. Bleibst du hängen, wischst du über den Satz – und er wird leichter. Ein Wisch zurück, und du liest wieder das Original.</p>
+      <div class="cta-row">
+        <a class="btn btn-gold" href="#laden">Im App Store laden</a>
+        <a class="btn btn-ghost" href="#fassungen">Vier Fassungen ansehen</a>
+      </div>
+    </div>
+
+    <div class="stage">
+      <article class="page" aria-label="Probeseite zum Ausprobieren">
+        <div class="page-head">
+          <span id="bookTitle">Dumas · Le Comte de Monte-Cristo</span>
+          <div class="book-switch" role="group" aria-label="Buch wählen">
+            <button type="button" data-book="fr" aria-pressed="true">Français</button>
+            <button type="button" data-book="ru" aria-pressed="false">Русский</button>
+          </div>
+        </div>
+        <p class="prose" id="before"></p>
+        <div class="target" id="target" tabindex="0" role="group" aria-roledescription="Wischbarer Satz" aria-label="Satz – mit den Pfeiltasten oder per Wisch die Fassung wechseln">
+          <span class="lv-badge" id="badge"></span>
+          <div class="lv-name" id="lvName"></div>
+          <p id="sentence" aria-live="polite"></p>
+          <div class="gloss-tip" id="tip" hidden></div>
+          <span class="sweep" id="sweep" aria-hidden="true"></span>
+        </div>
+        <p class="prose fade-out" id="after"></p>
+        <div class="ladder">
+          <div class="bars" aria-hidden="true"><i></i><i></i><i></i></div>
+          <span class="hint" id="hint">Wische über den Satz.</span>
+          <div class="dots" id="dots" role="group" aria-label="Fassung wählen"></div>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <section id="fassungen">
+    <div class="wrap">
+      <span class="eyebrow">So funktioniert’s</span>
+      <h2>Ein Satz. <em>Vier Stufen</em> nach unten.</h2>
+      <p class="sub">Jeder Wisch nach links nimmt dir ein Stück Schwierigkeit ab – ohne dass sich der Inhalt ändert. Schwere Wörter im Original sind direkt im Satz erklärt.</p>
+      <div class="stairs">
+        <div class="step reveal" style="--c:var(--lv-orig);--c-light:#E0BE74">
+          <span class="tag">Original · C1+</span>
+          <h3>Wie der Autor ihn geschrieben hat.</h3>
+          <p>Comme d’habitude, un pilote côtier partit aussitôt du port, rasa le château d’If, et alla aborder le navire entre le cap de Morgion et l’île de Rion.</p>
+        </div>
+        <div class="step reveal" style="--c:var(--lv-b1);--c-light:#8FB4E6">
+          <span class="tag">B1 – B2</span>
+          <h3>Derselbe Inhalt, einfachere Grammatik.</h3>
+          <p>Comme d’habitude, un pilote côtier est parti aussitôt du port. Il a rasé le château d’If, puis il est allé aborder le navire entre le cap de Morgion et l’île de Rion.</p>
+        </div>
+        <div class="step reveal" style="--c:var(--lv-a1);--c-light:#8CCBA0">
+          <span class="tag">A1 – A2</span>
+          <h3>Kurze Sätze, Grundwortschatz.</h3>
+          <p>Comme toujours, un pilote est parti du port. Il est passé près du château d’If. Il a rejoint le bateau entre Morgion et Rion.</p>
+        </div>
+        <div class="step reveal" style="--c:var(--lv-de);--c-light:#CDA3D8">
+          <span class="tag">Übersetzung</span>
+          <h3>Wenn gar nichts mehr geht.</h3>
+          <p class="it">Wie gewöhnlich lief sogleich ein Küstenlotse aus dem Hafen aus, fuhr dicht am Château d’If vorbei und ging zwischen dem Kap Morgion und der Insel Rion an Bord des Schiffes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="buecher">
+    <div class="wrap">
+      <span class="eyebrow">Die Bücher</span>
+      <h2>Echte Klassiker. <em>Nicht nacherzählt.</em></h2>
+      <p class="sub">Drei Werke im vollständigen Originaltext, Satz für Satz in vier Fassungen.</p>
+      <div class="shelf">
+        <a class="book reveal" href="#laden">
+          <div class="cover"><img src="img/bulgakow.jpg" alt="Buchcover: Мастер и Маргарита" loading="lazy" width="560" height="840"></div>
+          <h3>Der Meister und Margarita</h3>
+          <p>Michail Bulgakow · Original: Russisch</p>
+          <p class="orig">Мастер и Маргарита</p>
+        </a>
+        <a class="book reveal" href="#laden">
+          <div class="cover"><img src="img/monte_cristo_t1.jpg" alt="Buchcover: Le Comte de Monte-Cristo" loading="lazy" width="560" height="840"></div>
+          <h3>Der Graf von Monte Christo</h3>
+          <p>Alexandre Dumas · Original: Französisch</p>
+          <p class="orig">Le Comte de Monte-Cristo</p>
+        </a>
+        <a class="book reveal" href="#laden">
+          <div class="cover"><img src="img/zarathustra.jpg" alt="Buchcover: Also sprach Zarathustra" loading="lazy" width="560" height="840"></div>
+          <h3>Also sprach Zarathustra</h3>
+          <p>Friedrich Nietzsche · Original: Deutsch</p>
+          <p class="orig">Also sprach Zarathustra</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="niveau">
+    <div class="wrap">
+      <span class="eyebrow">Für wen</span>
+      <h2>Für jedes Niveau <em>zwischen A1 und C1.</em></h2>
+      <div class="levels">
+        <div class="level reveal">
+          <span class="chip" style="--c:var(--lv-a1)">A1 – A2</span>
+          <h3>Du kennst die Grundlagen.</h3>
+          <p>Lies in der leichtesten Fassung. Kurze Sätze und Grundwortschatz tragen dich durch die Geschichte. Wo es hakt, wischst du zur Übersetzung.<small>Startfassung: Leicht</small></p>
+        </div>
+        <div class="level reveal">
+          <span class="chip" style="--c:var(--lv-b1)">B1 – B2</span>
+          <h3>Du liest einfache Texte ohne Wörterbuch.</h3>
+          <p>Lies in der mittleren Fassung. Bei kniffligen Sätzen wischst du eine Stufe tiefer, bei leichten hinauf zum Original.<small>Startfassung: Mittel</small></p>
+        </div>
+        <div class="level reveal">
+          <span class="chip" style="--c:var(--lv-orig)">C1+</span>
+          <h3>Du willst das Original.</h3>
+          <p>Lies den Text, wie der Autor ihn geschrieben hat. Schwere Wörter sind erklärt, die leichteren Fassungen bleiben einen Wisch entfernt.<small>Startfassung: Original</small></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="laden" class="final">
+    <div class="wrap reveal">
+      <img class="icon" src="img/icon.png" alt="App-Icon von 3-Level-Books" width="220" height="220">
+      <h2>Das Original.<br><em>Einen Wisch entfernt.</em></h2>
+      <p class="sub" style="margin-inline:auto">Lade 3-Level-Books und fang mit dem ersten Kapitel an.</p>
+      <a class="badge" href="https://apps.apple.com/app/id6810761636"><img src="img/appstore-badge.png" alt="Laden im App Store" height="56"></a>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <span class="brand">3-Level-Books</span>
+  <a href="https://github.com/powel187/3lb-support#readme">Support</a>
+  <a href="https://github.com/powel187/3lb-support/blob/main/PRIVACY.md">Datenschutz</a>
+  <a href="mailto:paul@gontschar.com">paul@gontschar.com</a>
+  <span>© 2026</span>
+</footer>
+
+<script>
+const BOOKS = {
+  fr: {
+    title: "Dumas · Le Comte de Monte-Cristo",
+    before: "Le 24 février 1815, la vigie de Notre-Dame de la Garde signala le trois-mâts le Pharaon, venant de Smyrne, Trieste et Naples.",
+    after: "Aussitôt, comme d’habitude encore, la plate-forme du fort Saint-Jean s’était couverte de curieux ; car c’est toujours une grande affaire à Marseille que l’arrivée d’un bâtiment.",
+    levels: [
+      { text: "Comme d’habitude, un pilote [côtier] partit aussitôt du port, [rasa] le château d’If, et alla [aborder] le navire entre le cap de Morgion et l’île de Rion.",
+        gloss: { "côtier": "an der Küste; un pilote côtier: ein Küstenlotse", "rasa": "von raser: dicht an etwas vorbeifahren", "aborder": "an ein Schiff heranfahren, an Bord gehen" } },
+      { text: "Comme d’habitude, un pilote côtier est parti aussitôt du port. Il a rasé le château d’If, puis il est allé aborder le navire entre le cap de Morgion et l’île de Rion." },
+      { text: "Comme toujours, un pilote est parti du port. Il est passé près du château d’If. Il a rejoint le bateau entre Morgion et Rion." },
+      { text: "Wie gewöhnlich lief sogleich ein Küstenlotse aus dem Hafen aus, fuhr dicht am Château d’If vorbei und ging zwischen dem Kap Morgion und der Insel Rion an Bord des Schiffes.", italic: true },
+    ],
+  },
+  ru: {
+    title: "Булгаков · Мастер и Маргарита",
+    before: "Глава 1. Никогда не разговаривайте с неизвестными.",
+    after: "Первый из них, одетый в летнюю серенькую пару, был маленького роста, упитан, лыс, свою приличную шляпу пирожком нес в руке.",
+    levels: [
+      { text: "В час жаркого весеннего [заката] на Патриарших прудах появилось двое граждан.",
+        gloss: { "заката": "закат — Sonnenuntergang" } },
+      { text: "В час жаркого весеннего заката на Патриарших прудах появились два гражданина." },
+      { text: "Был жаркий весенний закат. На Патриарших прудах появились два гражданина." },
+      { text: "An einem heißen Frühlingsabend, zur Stunde des Sonnenuntergangs, erschienen an den Patriarchenteichen zwei Bürger.", italic: true },
+    ],
+  },
+};
+const LV = [
+  { key: "C1+", name: "Original · C1+", color: "var(--lv-orig)" },
+  { key: "B1",  name: "Mittel · B1 – B2", color: "var(--lv-b1)" },
+  { key: "A1",  name: "Leicht · A1 – A2", color: "var(--lv-a1)" },
+  { key: "DE",  name: "Übersetzung · Deutsch", color: "var(--lv-de)" },
+];
+const HINTS = ["Wische nach links: leichter.", "Weiter nach links – oder zurück nach rechts.", "Noch ein Wisch zur Übersetzung.", "Wische nach rechts, zurück zum Original."];
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const $ = (id) => document.getElementById(id);
+const target = $("target"), sentence = $("sentence"), badge = $("badge"), tip = $("tip");
+let book = "fr", lv = 0, busy = false, userTouched = false, autoTimer = null;
+
+function words(text) {
+  // [wort] = Glossar-Wort; Wörter einzeln, Leerzeichen hängen am Wort
+  return text.split(/(?<=\s)/).map((w) => {
+    const m = w.match(/^\[(.+?)\](.*)$/s);
+    return m ? { t: m[1] + m[2], g: m[1] } : { t: w };
+  });
+}
+function paint(cls) {
+  const L = BOOKS[book].levels[lv];
+  sentence.className = L.italic ? "italic" : "";
+  sentence.innerHTML = "";
+  words(L.text).forEach((w, i) => {
+    const s = document.createElement("span");
+    s.className = "w" + (cls ? " " + cls : "");
+    if (w.g) {
+      const word = document.createElement("span");
+      word.className = "gloss"; word.textContent = w.g; word.dataset.g = w.g;
+      s.append(word, w.t.slice(w.g.length));
+    } else s.textContent = w.t;
+    s.style.transitionDelay = (i * 0.018) + "s";
+    sentence.append(s);
+  });
+  target.style.setProperty("--lv", LV[lv].color);
+  $("lvName").textContent = LV[lv].name;
+  badge.textContent = LV[lv].key;
+  $("hint").textContent = HINTS[lv];
+  document.querySelectorAll(".bars i").forEach((b, i) => b.style.background = i < (3 - Math.min(lv, 3)) ? LV[lv].color : "");
+  [...$("dots").children].forEach((d, i) => d.setAttribute("aria-pressed", i === lv));
+  tip.hidden = true;
+}
+function go(n) {
+  n = Math.max(0, Math.min(3, n));
+  if (n === lv || busy) return;
+  if (reduce) { lv = n; paint(); return; }
+  busy = true;
+  const spans = [...sentence.children].reverse();   // von rechts nach links ausblenden
+  spans.forEach((s, i) => { s.style.transitionDelay = (i * 0.012) + "s"; s.classList.add("out"); });
+  const sw = $("sweep"); sw.classList.remove("go"); void sw.offsetWidth; sw.classList.add("go");
+  setTimeout(() => {
+    lv = n; paint("pre");
+    badge.classList.remove("pop"); void badge.offsetWidth; badge.classList.add("pop");
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      [...sentence.children].forEach((s) => s.classList.remove("pre"));
+      busy = false;
+    }));
+  }, 280);
+}
+function setBook(b) {
+  book = b; lv = 0;
+  const B = BOOKS[b];
+  $("bookTitle").textContent = B.title; $("before").textContent = B.before; $("after").textContent = B.after;
+  document.querySelectorAll(".book-switch button").forEach((x) => x.setAttribute("aria-pressed", x.dataset.book === b));
+  paint();
+}
+LV.forEach((L, i) => {
+  const d = document.createElement("button");
+  d.type = "button"; d.textContent = L.key; d.setAttribute("aria-label", L.name);
+  d.style.setProperty("--lv", L.color);
+  d.onclick = () => { stopAuto(); go(i); };
+  $("dots").append(d);
+});
+document.querySelectorAll(".book-switch button").forEach((x) => x.onclick = () => { stopAuto(); setBook(x.dataset.book); });
+
+// Wischen
+let x0 = null, moved = false;
+target.addEventListener("pointerdown", (e) => { x0 = e.clientX; moved = false; stopAuto(); });
+target.addEventListener("pointermove", (e) => { if (x0 !== null && Math.abs(e.clientX - x0) > 8) moved = true; });
+const end = (e) => {
+  if (x0 === null) return;
+  const dx = e.clientX - x0; x0 = null;
+  if (dx < -40) go(lv + 1); else if (dx > 40) go(lv - 1);
+};
+target.addEventListener("pointerup", end);
+target.addEventListener("pointerleave", end);
+target.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight") { e.preventDefault(); stopAuto(); go(lv + 1); }
+  if (e.key === "ArrowLeft") { e.preventDefault(); stopAuto(); go(lv - 1); }
+});
+sentence.addEventListener("click", (e) => {
+  const g = e.target.closest(".gloss");
+  if (!g || moved) return;
+  stopAuto();
+  const text = BOOKS[book].levels[lv].gloss[g.dataset.g];
+  tip.innerHTML = "<strong>" + g.dataset.g + "</strong> – " + text;
+  tip.hidden = !tip.hidden && tip.dataset.w === g.dataset.g;
+  tip.dataset.w = g.dataset.g;
+});
+
+// Vorführung, bis jemand selbst wischt
+function stopAuto() { userTouched = true; clearInterval(autoTimer); }
+function startAuto() {
+  if (reduce) return;
+  autoTimer = setInterval(() => { if (!userTouched) go(lv === 3 ? 0 : lv + 1); }, 2800);
+}
+
+// Leselampe folgt der Maus
+const root = document.documentElement;
+if (!reduce && matchMedia("(pointer:fine)").matches) {
+  addEventListener("pointermove", (e) => {
+    root.style.setProperty("--mx", (e.clientX / innerWidth * 100) + "%");
+    root.style.setProperty("--my", (e.clientY / innerHeight * 100) + "%");
+  }, { passive: true });
+}
+
+// Einblenden beim Scrollen
+const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .15 });
+document.querySelectorAll(".reveal").forEach((el, i) => { el.style.transitionDelay = (i % 4) * 0.12 + "s"; io.observe(el); });
+
+setBook("fr");
+startAuto();
+</script>
+</body>
+</html>
