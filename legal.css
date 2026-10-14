@@ -1,0 +1,38 @@
+/* Rechtsseiten (Impressum, Datenschutz) – gleiche Tokens und Schriften wie die Startseite */
+:root{
+  --night:#110E0B; --ink:#1E1915; --cream:#FAF3E3; --gold:#D8AC59; --muted:#B9AE98;
+  --display:"Bodoni Moda", "Didot", Georgia, serif;
+  --book:"Source Serif 4", Georgia, serif;
+  --ui:"Figtree", system-ui, sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--night);color:var(--cream);font-family:var(--ui);-webkit-font-smoothing:antialiased;text-wrap:pretty;
+  background-image:radial-gradient(900px circle at 85% -10%, rgba(232,170,80,.13), transparent 60%)}
+a{color:var(--gold);text-underline-offset:3px}
+a:hover{color:var(--cream)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:6px}
+.wrap{max-width:780px;margin:0 auto;padding-inline:clamp(20px,5vw,40px)}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:22px}
+.brand{display:flex;align-items:center;gap:12px;font-family:var(--book);font-weight:600;font-size:20px;color:var(--cream);text-decoration:none}
+.brand img{width:44px;height:auto;margin:-8px}
+.back{font-size:15px;color:var(--muted);text-decoration:none}
+.back:hover{color:var(--gold)}
+main{padding-block:clamp(32px,6vw,72px) clamp(56px,8vw,96px)}
+.eyebrow{font:600 12px/1 var(--ui);letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+h1{font-family:var(--display);font-weight:500;font-size:clamp(44px,6vw,72px);line-height:1;letter-spacing:-.02em;margin:16px 0 12px}
+.stand{color:var(--muted);font-size:15px;margin:0 0 40px}
+h2{font-family:var(--display);font-weight:500;font-size:clamp(24px,2.6vw,30px);line-height:1.15;margin:44px 0 12px;color:var(--cream)}
+h3{font:600 16px/1.4 var(--ui);margin:24px 0 6px;color:var(--cream)}
+p,li{font-family:var(--book);font-size:17.5px;line-height:1.65;color:rgba(250,243,227,.86)}
+p{margin:0 0 14px}
+ul{padding-left:1.2em;margin:0 0 14px}
+address{font-style:normal}
+.card{background:rgba(250,243,227,.035);border:1px solid rgba(250,243,227,.1);border-radius:16px;padding:22px 24px;margin:0 0 14px}
+.card p:last-child{margin-bottom:0}
+hr{height:1px;border:0;margin:48px 0 0;background:linear-gradient(90deg,transparent,rgba(216,172,89,.35),transparent)}
+footer{display:flex;flex-wrap:wrap;gap:10px 26px;align-items:center;padding-block:28px 44px;font-size:14px;color:var(--muted)}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--gold)}
+footer a[aria-current="page"],footer a.strong{color:var(--cream);font-weight:600}
+footer .copy{margin-left:auto}
+.name{font-family:var(--book);font-weight:600;letter-spacing:0}
